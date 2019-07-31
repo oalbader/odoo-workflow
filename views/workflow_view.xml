@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<odoo>
+    <data>
+
+        <template id="assets_backend" inherit_id="web.assets_backend">
+            <xpath expr="." position="inside">
+                <!-- Temporary fix: preload all needed JS file instead of loading it by widget component -->
+                <script type="text/javascript" src="/web_diagram/static/lib/js/raphael.js"/>
+                <script type="text/javascript" src="/web/static/lib/ace/ace.odoo-custom.js"/>
+                <script type="text/javascript" src="/web/static/lib/ace/mode-python.js"/>
+                <script type="text/javascript" src="/web/static/lib/ace/mode-xml.js"/>
+            </xpath>
+        </template>
+
+        <!-- Workflow Diagram View-->
+        <record id="workflow_diagram_view" model="ir.ui.view">
+            <field name="name">workflow.workflow.diagram</field>
+            <field name="model">workflow.workflow</field>
+            <field name="arch" type="xml">
+                <diagram string="Workflow Editor">
+                    <node object="workflow.node"
+                          bgcolor="gray:start_node==True;grey:end_node==True">
+                        <field name="name" required="1"/>
+                        <field name="start_node"/>
+                        <field name="end_node"/>
+                    </node>
+                    <arrow object="workflow.link"
+                           source="node_from"
+                           destination="node_to"
+                           label="['name']">
+                        <field name="name"/>
+                        <field name="node_from" required="1"/>
+                        <field name="node_to" required="1"/>
+                    </arrow>
+                    <label string="Dynamic Workflow Editor"/>
+<!--                    <label string="Notes: You can only have one start node and multiple end nodes."/>-->
+                </diagram>
+            </field>
+        </record>
+
+        <record id="workflow_editor_action" model="ir.actions.act_window">
+            <field name="name">Workflow</field>
+            <field name="res_model">workflow.workflow</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form,diagram</field>
+        </record>
+
+
+        <menuitem name="Workflow Editor" id="workflow_menu" action="workflow_editor_action" parent="base.menu_administration" sequence="-1"/>
+    </data>
+</odoo>
